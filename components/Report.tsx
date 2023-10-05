@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -49,6 +50,8 @@ interface Identifier {
 }
 
 interface Vulnerability {
+  incrementId: number;
+
   id: string;
   category: string;
   name: string;
@@ -71,81 +74,169 @@ interface Props {
   repo: string;
 }
 
+function getSeverityClass(severity: string) {
+  switch (severity) {
+    case "Medium":
+      return "bg-orange-400";
+    case "Low":
+      return "bg-teal-400";
+    case "High":
+      return "bg-red-500";
+  }
+}
+
 export function Report({ report, repo }: Props) {
+  const [subdir, setSubdir] = useState<string>("");
+  const [severity, setSeverity] = useState<string>("");
+  const vulnerabilities = report.vulnerabilities
+    ?.map((item, i) => {
+      item.incrementId = i;
+      return item;
+    })
+    ?.filter((item) => item.location.file.startsWith(subdir))
+    .filter((item) => item.severity.startsWith(severity));
+
+  const [page, setPage] = useState<number>(1);
+  const pageSize = 20;
+
+  const pageStart = pageSize * (page - 1);
+  const pageEnd = pageStart + pageSize;
+
+  const vulnsCount = vulnerabilities?.length ?? 0;
+  const paginationEnabled = vulnsCount > pageSize;
+  const pages = Math.ceil(vulnsCount / pageSize);
+
+  useEffect(() => {
+    setPage(1);
+  }, [vulnsCount]);
+
+  console.log("Render");
+
   return (
-    <div className="rounded p-4  border-slate-200 border-2 mt-4 mb-10">
-      <h2>Results</h2>
-      <div className="text-slate-400">
-        Versions: Report {report.version} / Analyzer {report.scan.analyzer.name}{" "}
-        {report.scan.analyzer.version} / Scanner {report.scan.scanner.name}{" "}
-        {report.scan.scanner.version}
-      </div>
-      <div className="text-slate-400">Status: {report.scan.status}</div>
-
-      {report.vulnerabilities?.map((item) => (
-        <details key={item.id} className="border-t-2 py-4">
-          <summary>
-            <h3 className="text-lg font-semibold inline-block text-slate-800">
-              <span className="p-1 rounded bg-orange-400 mr-2 px-4">
-                {item.severity}
-              </span>{" "}
-              {item.name}
-            </h3>
-          </summary>
-          <div className="mt-1">
-            <Markdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                a: ({ node, ...props }) => (
-                  <a
-                    {...props}
-                    className="text-blue-600 underline hover:text-blue-800"
-                  />
-                ),
-                ul: ({ node, ...props }) => (
-                  <ul {...props} className="list-disc pl-6 my-2" />
-                ),
-                p: ({ node, ...props }) => <p {...props} className="my-2" />,
-              }}
-            >
-              {item.description}
-            </Markdown>
-
-            <h4 className="text-md font-semibold inline-block text-slate-800">
-              Identifiers
-            </h4>
-
-            <ul className="list-disc pl-6 my-2">
-              {item.identifiers.map((item) => (
-                <li key={`${item.type}.${item.name}`}>
-                  {item.url ? (
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      className="text-blue-600 underline hover:text-blue-800"
-                    >
-                      {item.name}
-                    </a>
-                  ) : (
-                    item.name
-                  )}
-                </li>
-              ))}
-            </ul>
+    <div>
+      <details className="">
+        <summary className="cursor-pointer">Filters</summary>
+        <div className="flex border-2 rounded">
+          <div className="flex p-2 border-r">
+            <label>Severity: </label>
+            <select onInput={(e) => setSeverity(e.currentTarget.value)}>
+              <option></option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
           </div>
-          <p className="mt-1">
-            Source:{" "}
-            <a
-              href={getUrl(repo, item.location)}
-              className="text-blue-600 underline hover:text-blue-800"
-              target="_blank"
-            >
-              Open {item.location.file}:{item.location.start_line}
-              {item.location.end_line ? `-${item.location.end_line}` : ""}
-            </a>
-          </p>
-        </details>
-      ))}
+          <div className="flex p-2 border-r">
+            <label>Subdirectory: </label>
+            <input
+              placeholder="e.g. nextapp"
+              onInput={(e) => setSubdir(e.currentTarget.value)}
+            />
+          </div>
+        </div>
+      </details>
+      <div className="rounded p-4  border-slate-200 border-2 mt-4 mb-10">
+        <h2>Results</h2>
+        <div className="text-slate-400">
+          Versions: Report {report.version} / Analyzer{" "}
+          {report.scan.analyzer.name} {report.scan.analyzer.version} / Scanner{" "}
+          {report.scan.scanner.name} {report.scan.scanner.version}
+        </div>
+        <div className="text-slate-400">
+          Status: {report.scan.status} / Vulnerabilities:{" "}
+          {vulnerabilities?.length}
+        </div>
+
+        {vulnerabilities?.slice(pageStart, pageEnd)?.map((item) => (
+          <details
+            key={item.id + item.incrementId}
+            className="border-t-2 py-4 group"
+          >
+            <summary className="relative pr-2 cursor-pointer flex hide-arrow after:content-['▼'] after:block after:absolute after:right-2 after:transition-transform after:origin-center group-open:after:rotate-180">
+              <h3 className="text-lg font-semibold inline-block text-slate-800">
+                <span
+                  className={`p-1 rounded mr-2 px-4 ${getSeverityClass(
+                    item.severity
+                  )}`}
+                >
+                  {item.severity}
+                </span>{" "}
+                {item.name}
+              </h3>
+            </summary>
+            <div className="mt-1">
+              <Markdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a
+                      {...props}
+                      className="text-blue-600 underline hover:text-blue-800"
+                    />
+                  ),
+                  ul: ({ node, ...props }) => (
+                    <ul {...props} className="list-disc pl-6 my-2" />
+                  ),
+                  p: ({ node, ...props }) => <p {...props} className="my-2" />,
+                }}
+              >
+                {item.description}
+              </Markdown>
+
+              <h4 className="text-md font-semibold inline-block text-slate-800">
+                Identifiers
+              </h4>
+
+              <ul className="list-disc pl-6 my-2">
+                {item.identifiers.map((item) => (
+                  <li key={`${item.type}.${item.name}`}>
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        className="text-blue-600 underline hover:text-blue-800"
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      item.name
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="mt-1">
+              Source:{" "}
+              <a
+                href={getUrl(repo, item.location)}
+                className="text-blue-600 underline hover:text-blue-800"
+                target="_blank"
+              >
+                Open {item.location.file}:{item.location.start_line}
+                {item.location.end_line ? `-${item.location.end_line}` : ""}
+              </a>
+            </p>
+          </details>
+        ))}
+
+        <div className="flex justify-end">
+          <button
+            className="inline-block w-8 h-8 border-2 rounded-l"
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          >
+            &lt;
+          </button>
+          <span className="inline-block h-8 border-2 border-x-0 p-1">
+            {page} / {pages}
+          </span>
+          <button
+            className="inline-block w-8 h-8 border-2 rounded-r"
+            onClick={() => setPage((p) => Math.min(p + 1, pages))}
+          >
+            &gt;
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

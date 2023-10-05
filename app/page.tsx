@@ -27,7 +27,7 @@ export default function Home() {
   }, [json]);
 
   return (
-    <main className="w-[1200px] m-auto">
+    <main className="w-[1200px] m-auto max-w-full p-2">
       <h1 className="text-4xl font-serif mt-10 mb-2 text-slate-800">
         SAST Report Explorer
       </h1>
@@ -48,6 +48,7 @@ export default function Home() {
         id="json"
         className="w-full rounded border-2 p-1"
         rows={data ? 1 : 20}
+        hidden={json.length > 200000}
         onInput={(e) => setJson(e.currentTarget.value)}
         placeholder="Paste your report here"
       ></textarea>

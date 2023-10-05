@@ -19,3 +19,7 @@
 body {
   color: rgb(var(--foreground-rgb));
 }
+
+.hide-arrow::-webkit-details-marker {
+  display: none;
+}
