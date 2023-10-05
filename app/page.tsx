@@ -28,14 +28,24 @@ export default function Home() {
 
   return (
     <main className="w-[1200px] m-auto">
-      <h1 className="text-2xl font-serif mt-10 mb-2">SAST Report Explorer</h1>
+      <h1 className="text-4xl font-serif mt-10 mb-2 text-slate-800">
+        SAST Report Explorer
+      </h1>
+      <label htmlFor="repo" className="text-sm text-slate-500">
+        URL to GitLab repo:
+      </label>
       <input
+        id="repo"
         className="w-full rounded border-2 mb-1 p-1"
         placeholder="https://gitlab.com/group/project/-/blob/main/"
         value={repo}
         onInput={(e) => setRepo(e.currentTarget.value)}
       />
+      <label htmlFor="json" className="text-sm text-slate-500">
+        SAST Report:
+      </label>
       <textarea
+        id="json"
         className="w-full rounded border-2 p-1"
         rows={data ? 1 : 20}
         onInput={(e) => setJson(e.currentTarget.value)}

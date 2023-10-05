@@ -85,7 +85,7 @@ export function Report({ report, repo }: Props) {
       {report.vulnerabilities?.map((item) => (
         <details key={item.id} className="border-t-2 py-4">
           <summary>
-            <h3 className="text-lg font-semibold inline-block">
+            <h3 className="text-lg font-semibold inline-block text-slate-800">
               <span className="p-1 rounded bg-orange-400 mr-2 px-4">
                 {item.severity}
               </span>{" "}
@@ -97,7 +97,10 @@ export function Report({ report, repo }: Props) {
               remarkPlugins={[remarkGfm]}
               components={{
                 a: ({ node, ...props }) => (
-                  <a {...props} className="text-blue-600 underline" />
+                  <a
+                    {...props}
+                    className="text-blue-600 underline hover:text-blue-800"
+                  />
                 ),
                 ul: ({ node, ...props }) => (
                   <ul {...props} className="list-disc pl-6 my-2" />
@@ -107,14 +110,35 @@ export function Report({ report, repo }: Props) {
             >
               {item.description}
             </Markdown>
+
+            <h4 className="text-md font-semibold inline-block text-slate-800">
+              Identifiers
+            </h4>
+
+            <ul className="list-disc pl-6 my-2">
+              {item.identifiers.map((item) => (
+                <li key={`${item.type}.${item.name}`}>
+                  {item.url ? (
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      className="text-blue-600 underline hover:text-blue-800"
+                    >
+                      {item.name}
+                    </a>
+                  ) : (
+                    item.name
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
           <p className="mt-1">
             Source:{" "}
             <a
-              href={`${repo}${item.location.file}#L${item.location.start_line}${
-                item.location.end_line ? `-${item.location.end_line}` : ""
-              }`}
-              className="text-blue-600 underline"
+              href={getUrl(repo, item.location)}
+              className="text-blue-600 underline hover:text-blue-800"
+              target="_blank"
             >
               Open {item.location.file}:{item.location.start_line}
               {item.location.end_line ? `-${item.location.end_line}` : ""}
@@ -124,4 +148,17 @@ export function Report({ report, repo }: Props) {
       ))}
     </div>
   );
+}
+
+function getUrl(repo: string, location: Location) {
+  try {
+    return new URL(
+      `${location.file}#L${location.start_line}${
+        location.end_line ? `-${location.end_line}` : ""
+      }`,
+      repo
+    ).toString();
+  } catch {
+    return "";
+  }
 }
