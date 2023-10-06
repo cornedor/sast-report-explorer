@@ -114,7 +114,7 @@ export function Report({ report, repo }: Props) {
 
   return (
     <div>
-      <details className="">
+      <details className="sticky top-0 bg-slate-100 z-10">
         <summary className="cursor-pointer">Filters</summary>
         <div className="flex border-2 rounded">
           <div className="flex p-2 border-r">
