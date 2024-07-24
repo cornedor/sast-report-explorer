@@ -114,7 +114,7 @@ export function Report({ report, repo }: Props) {
 
   return (
     <div>
-      <details className="sticky top-0 bg-slate-100 z-10">
+      <details className="sticky top-0 bg-slate-100 z-10 dark:bg-slate-800">
         <summary className="cursor-pointer">Filters</summary>
         <div className="flex border-2 rounded">
           <div className="flex p-2 border-r">
@@ -135,14 +135,14 @@ export function Report({ report, repo }: Props) {
           </div>
         </div>
       </details>
-      <div className="rounded p-4  border-slate-200 border-2 mt-4 mb-10">
+      <div className="rounded p-4  border-slate-200 border-2 mt-4 mb-10 dark:border-slate-600">
         <h2>Results</h2>
-        <div className="text-slate-400">
+        <div className="text-slate-500">
           Versions: Report {report.version} / Analyzer{" "}
           {report.scan.analyzer.name} {report.scan.analyzer.version} / Scanner{" "}
           {report.scan.scanner.name} {report.scan.scanner.version}
         </div>
-        <div className="text-slate-400">
+        <div className="text-slate-500">
           Status: {report.scan.status} / Vulnerabilities:{" "}
           {vulnerabilities?.length}
         </div>
@@ -153,7 +153,7 @@ export function Report({ report, repo }: Props) {
             className="border-t-2 py-4 group"
           >
             <summary className="relative pr-2 cursor-pointer flex hide-arrow after:content-['▼'] after:block after:absolute after:right-2 after:transition-transform after:origin-center group-open:after:rotate-180">
-              <h3 className="text-lg font-semibold inline-block text-slate-800">
+              <h3 className="text-lg font-semibold inline-block text-slate-800 dark:text-slate-100">
                 <span
                   className={`p-1 rounded mr-2 px-4 ${getSeverityClass(
                     item.severity
@@ -164,14 +164,14 @@ export function Report({ report, repo }: Props) {
                 {item.name}
               </h3>
             </summary>
-            <div className="mt-1">
+            <div className="mt-1 dark:text-slate-300">
               <Markdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                   a: ({ node, ...props }) => (
                     <a
                       {...props}
-                      className="text-blue-600 underline hover:text-blue-800"
+                      className="text-blue-600 underline hover:text-blue-800 dark:hover:text-blue-500"
                     />
                   ),
                   ul: ({ node, ...props }) => (
@@ -183,7 +183,7 @@ export function Report({ report, repo }: Props) {
                 {item.description}
               </Markdown>
 
-              <h4 className="text-md font-semibold inline-block text-slate-800">
+              <h4 className="text-md font-semibold inline-block text-slate-800 dark:text-slate-300">
                 Identifiers
               </h4>
 
@@ -194,7 +194,7 @@ export function Report({ report, repo }: Props) {
                       <a
                         href={item.url}
                         target="_blank"
-                        className="text-blue-600 underline hover:text-blue-800"
+                        className="text-blue-600 underline hover:text-blue-800 dark:hover:text-blue-500"
                       >
                         {item.name}
                       </a>
@@ -209,7 +209,7 @@ export function Report({ report, repo }: Props) {
               Source:{" "}
               <a
                 href={getUrl(repo, item.location)}
-                className="text-blue-600 underline hover:text-blue-800"
+                className="text-blue-600 underline hover:text-blue-800 dark:hover:text-blue-500"
                 target="_blank"
               >
                 Open {item.location.file}:{item.location.start_line}
