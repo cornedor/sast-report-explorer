@@ -119,16 +119,20 @@ export function Report({ report, repo }: Props) {
         <div className="flex border-2 rounded">
           <div className="flex p-2 border-r">
             <label>Severity: </label>
-            <select onInput={(e) => setSeverity(e.currentTarget.value)}>
-              <option></option>
-              <option>High</option>
-              <option>Medium</option>
-              <option>Low</option>
+            <select
+              onInput={(e) => setSeverity(e.currentTarget.value)}
+              className="bg-transparent px-2"
+            >
+              <option value="">Select severity</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
             </select>
           </div>
           <div className="flex p-2 border-r">
             <label>Subdirectory: </label>
             <input
+              className="bg-transparent px-2"
               placeholder="e.g. nextapp"
               onInput={(e) => setSubdir(e.currentTarget.value)}
             />
