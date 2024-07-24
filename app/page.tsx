@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <main className="w-[1200px] m-auto max-w-full p-2">
-      <h1 className="text-4xl font-serif mt-10 mb-2 text-slate-800">
+      <h1 className="text-4xl font-serif mt-10 mb-2 text-slate-800 dark:text-slate-400">
         SAST Report Explorer
       </h1>
       <label htmlFor="repo" className="text-sm text-slate-500">
@@ -36,7 +36,7 @@ export default function Home() {
       </label>
       <input
         id="repo"
-        className="w-full rounded border-2 mb-1 p-1"
+        className="w-full rounded border-2 mb-1 p-1 dark:bg-slate-700"
         placeholder="https://gitlab.com/group/project/-/blob/main/"
         value={repo}
         onInput={(e) => setRepo(e.currentTarget.value)}
@@ -46,7 +46,7 @@ export default function Home() {
       </label>
       <textarea
         id="json"
-        className="w-full rounded border-2 p-1"
+        className="w-full rounded border-2 p-1 dark:bg-slate-700"
         rows={data ? 1 : 20}
         hidden={json.length > 200000}
         onInput={(e) => setJson(e.currentTarget.value)}
