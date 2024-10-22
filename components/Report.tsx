@@ -112,8 +112,6 @@ export function Report({ report, repo }: Props) {
     setPage(1);
   }, [vulnsCount]);
 
-  console.log("Render");
-
   return (
     <div>
       <details className="sticky top-0 bg-slate-100 z-10 dark:bg-slate-800">
@@ -254,7 +252,7 @@ function getUrl(repo: string, location: Location) {
       `${location.file}#L${location.start_line}${
         location.end_line ? `-${location.end_line}` : ""
       }`,
-      repo
+      repo.replace(/\/\-\/tree\//gi, "/-/blob/").replace(/([^\/])$/, "$1/")
     ).toString();
   } catch {
     return "";
