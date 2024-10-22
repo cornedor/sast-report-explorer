@@ -81,7 +81,9 @@ function getSeverityClass(severity: string) {
     case "Low":
       return "bg-teal-400";
     case "High":
-      return "bg-red-500";
+      return "bg-red-400 text-white";
+    case "Critical":
+      return "bg-red-500 text-white";
   }
 }
 
@@ -124,6 +126,7 @@ export function Report({ report, repo }: Props) {
               className="bg-transparent px-2"
             >
               <option value="">Select severity</option>
+              <option value="Critical">Critical</option>
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
